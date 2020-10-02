@@ -1,0 +1,17 @@
+.buttons {
+  margin: auto;
+  background-color: #ccc;
+  text-align: center;
+}
+
+.buttons button {
+  border: none;
+  margin: 16px;
+  padding: 16px 32px;
+}
+
+#canvas {
+  display: block;
+  margin: 16px auto;
+  border: 1px solid red;
+}
