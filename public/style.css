@@ -1,7 +1,21 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
 .buttons {
-  margin: auto;
-  background-color: #ccc;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, .25);
   text-align: center;
+  z-index: 1;
 }
 
 .buttons button {
@@ -10,8 +24,10 @@
   padding: 16px 32px;
 }
 
-#canvas {
-  display: block;
-  margin: 16px auto;
-  border: 1px solid red;
+#main {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }

@@ -2,21 +2,25 @@
 
 <head>
 
-  <link rel="stylesheet" href="3d-globe.css" />
+  <link rel="stylesheet" href="style.css" />
 
 </head>
 
   <body>
 
     <div class="buttons">
-      <button>Point 1</button>
-      <button>Point 2</button>
-      <button>Point 3</button>
+      <!-- "South" latitudes are negative, as are "West" longitudes -->
+      <button data-lat="51.5074" data-lng="-0.1278">London</button>
+      <button data-lat="-34.9285" data-lng="138.6007">Adelaide</button>
+      <button data-lat="36.1627" data-lng="-86.7816">Nashville</button>
+      <button data-lat="0" data-lng="0">Zero</button>
+      <button data-lat="-90" data-lng="0">South Pole</button>
+      <button data-lat="90" data-lng="0">North Pole</button>
     </div>
 
-    <canvas id="canvas" width="640" height="480"></canvas>
+    <div id="main"></div>
 
-    <script src="3d-globe.js"></script>
+    <script src="script.js"></script>
 
   </body>
 
