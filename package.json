@@ -9,7 +9,7 @@
     "webpack": "^4.44.2"
   },
   "scripts": {
-    "start": "webpack --watch",
+    "watch": "webpack --watch",
     "build": "webpack"
   },
   "devDependencies": {

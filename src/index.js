@@ -63,18 +63,18 @@ const init = () => {
 
 	const pointsMaterial = new THREE.PointsMaterial( {
     color: primaryColour,
-    opacity: .9,
-    // transparent: true,
+    opacity: 1,
+    transparent: true,
     map: circleTexture,
     alphaTest: 0.75,
-    size: 3,
+    size: 4,
   });
   points = new THREE.Points( pointsGeometry, pointsMaterial );
   scene.add( points );
 
   const linesMaterial = new THREE.LineBasicMaterial( {
-    color: 0xccccff,
-    opacity: 0.5,
+    color: primaryColour,
+    opacity: 0.25,
     transparent: true,
     linewidth: 3,
   });
@@ -143,7 +143,7 @@ const generatePointsGeometry = (radius = 99, points = 500) => {
   return geometry;
 };
 
-const generateLinesGeometry = (pointsGeometry, hubCount = 100, hubLineCount = 5) => {
+const generateLinesGeometry = (pointsGeometry, hubCount = 10, hubLineCount = 10) => {
   const geometry = new THREE.Geometry();
 
   const allPoints = pointsGeometry.vertices.slice(0);
@@ -168,25 +168,33 @@ const generateLinesGeometry = (pointsGeometry, hubCount = 100, hubLineCount = 5)
       return 0;
     });
 
-    // Every startingPoint gets at least one line to its closest neighbour
-    geometry.vertices.push(new THREE.Vector3(0, 0, 0));
-    geometry.vertices.push(points[0]);
+    // Dicard the nearest point - it's the current point
+    points.shift();
 
-    // geometry.vertices.push(points.shift());
-    // geometry.vertices.push(points.shift());
+    // Draw a line from the startingPoint to the center of the globe
+    // geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+    // geometry.vertices.push(startingPoint);
 
-    // if (index < hubCount) {
+    // Every startingPoint gets lines to its closest X neighbours
+    for (let i = 0; i < 5; i++) {
+      geometry.vertices.push(startingPoint);
+      geometry.vertices.push(points.shift());
+    }
 
-    //   // Truncate
-    //   points.length = hubLineCount + 1;
+    // A certain number of startingPoints get a whole bunch more, acting as "hubs"
+    if (index < hubCount) {
+    // if (false) {
 
-    //   // Add lines for each point that made the cut
-    //   points.forEach ( (point) => {
-    //     geometry.vertices.push(startingPoint);
-    //     geometry.vertices.push(point);
-    //   });
+      // Truncate
+      points.length = hubLineCount + 1;
 
-    // }
+      // Add lines for each point that made the cut
+      points.forEach ( (point) => {
+        geometry.vertices.push(startingPoint);
+        geometry.vertices.push(point);
+      });
+
+    }
 
   });
 
