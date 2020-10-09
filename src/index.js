@@ -25,7 +25,7 @@ void main() {
 	vec3 viewDirectionW = normalize(cameraPosition - vPositionW);
 	float fresnelTerm = dot(viewDirectionW, vNormalW);
 	fresnelTerm = clamp(1.0 - fresnelTerm, 0., 1.);
-	gl_FragColor = vec4( color, fresnelTerm * fresnelTerm);
+	gl_FragColor = vec4( color, fresnelTerm * fresnelTerm * fresnelTerm * fresnelTerm);
 }
 `,
 };
@@ -33,13 +33,37 @@ void main() {
 let camera, scene, renderer;
 let halo, points, lines, globe;
 
+let rotationStartTime = 0;
+const rotationDurationGlobe = 2000; // ms
+const rotationDurationHighlight = 2000; // ms
+
 const rotation = { x: 0, y: 0}; // Degrees
+const rotationStart = { x: 0, y: 0}; // Degrees
 const rotationTarget = { x: 55.7558, y: 37.6173}; // Degrees
+
+// Updates the rotation variable with new {x, y} values based on rotationStart,
+// rotationEnd, rotationDuration, and rotationStartTime, with an easing function.
+const updateGlobeRotation = () => {
+
+  // Clamped zero-to-one value (duration)
+  const time = Math.max(0, Math.min(1, (window.performance.now() - rotationStartTime) / rotationDurationGlobe));
+
+  // Eased zero-to-one value (animation progression)
+  // "easeOutQuart" (Thanks, easing.net!)
+  let progress = time;
+  if (time > 0 && time < 1) {
+    progress = 1 - Math.pow(1 - time, 4);
+  }
+
+  rotation.x = rotationStart.x + progress * (rotationTarget.x - rotationStart.x);
+  rotation.y = rotationStart.y + progress * (rotationTarget.y - rotationStart.y);
+
+};
 
 const init = () => {
 
 	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 500 );
-	camera.position.z = 200;
+	camera.position.z = 400;
 
   scene = new THREE.Scene();
 
@@ -47,7 +71,6 @@ const init = () => {
   const haloMaterial = new THREE.ShaderMaterial( {
     vertexShader: fresnelShader.vertexShader,
     fragmentShader: fresnelShader.fragmentShader,
-    opacity: 0.18,
     transparent: true,
     depthWrite: false,
   });
@@ -116,6 +139,9 @@ const init = () => {
 }
 
 const rotateToTarget = (e) => {
+  rotationStartTime = window.performance.now();
+  rotationStart.x = rotation.x;
+  rotationStart.y = rotation.y;
   rotationTarget.x = e.target.dataset.lat;
   rotationTarget.y = -e.target.dataset.lng - 90; // Adjust for projection
 };
@@ -207,10 +233,10 @@ const animate = () => {
 
   requestAnimationFrame( animate );
 
-  // Basic easing
-  rotation.x = rotationTarget.x * .05 + rotation.x * .95;
-  rotation.y = rotationTarget.y * .05 + rotation.y * .95;
+  // Use an easing function to update the 'rotation' variable
+  updateGlobeRotation();
 
+  // Apply the rotation to each 3D object
   [points, lines, globe].forEach( (obj) => {
     obj.rotation.x = rotation.x * Math.PI / 180; // Convert to radians
     obj.rotation.y = rotation.y * Math.PI / 180; // Convert to radians
